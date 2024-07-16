@@ -37,8 +37,10 @@ class MainActivity : FragmentActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Checks if the internet connection is available or not.
         viewModel.isNetworkConnectedLiveData.value = this.hasInternetConnection()
 
+        // Country Spinner Adapter
         ArrayAdapter.createFromResource(
             this,
             R.array.country_names,
@@ -47,6 +49,9 @@ class MainActivity : FragmentActivity() {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.countrySpinner.adapter = adapter
         }
+
+        /* Country Spinner Listener and also storing the selected item in the country variable. Storing the country code in the variable.
+        * As the country names list and the country codes are stored in the same manner so retrieving the country code according to the position. */
         binding.countrySpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -65,6 +70,7 @@ class MainActivity : FragmentActivity() {
                 }
             }
 
+        // Category Spinner Adapter
         ArrayAdapter.createFromResource(
             this,
             R.array.categories,
@@ -73,6 +79,10 @@ class MainActivity : FragmentActivity() {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.categorySpinner.adapter = adapter
         }
+
+        /* Category Spinner Listener and also storing the selected item in the category variable. If the selected item is Select Category it
+         * will store empty string else it will store the selected item in the category variable in lowercase to fetch the details accordingly.
+         * */
         binding.categorySpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -100,7 +110,10 @@ class MainActivity : FragmentActivity() {
         transaction.add(R.id.list_fragment, homeFragment)
         transaction.commit()
 
+        // Initially Calls the getTopHeadline with country India and empty category
         viewModel.getTopHeadlines(country, category)
+
+        // Handles the State of the data received from the ViewModel
         viewModel.topHeadlines.observe(this) {
             when (it) {
                 is ResponseState.Success -> {
@@ -121,12 +134,18 @@ class MainActivity : FragmentActivity() {
             }
         }
 
+        // Updates the banner with respect to the selected item from the list.
         homeFragment.setOnContentSelectedListener {
             updateBanner(it)
         }
 
     }
 
+    /*
+     * Handled long press Dpad down to refresh functionality. Refresh works after 2.5 seconds.
+     * You can change the time by changing the LONG_PRESS_TIMEOUT variable.
+     * Also handle short press of the Dpad down button to focus on the next element by calling moveFocusToNextElement().
+     * */
     @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         when (event.action) {
@@ -152,17 +171,20 @@ class MainActivity : FragmentActivity() {
     }
 
 
+    // Function to move focus to the next element
     private fun moveFocusToNextElement() {
         // Logic to move focus to the next element
         currentFocus?.focusSearch(View.FOCUS_DOWN)?.requestFocus()
     }
 
+    // Runnable to handle long press refresh
     private val longPressRunnable = Runnable {
         isLongPress = true
         // Call ViewModel function to refresh
         viewModel.getTopHeadlines(country, category)
     }
 
+    // Function to set data to the banner.
     private fun updateBanner(dataList: Article) {
         binding.title.text = dataList.title
         binding.description.text = dataList.description
@@ -170,6 +192,8 @@ class MainActivity : FragmentActivity() {
         Glide.with(this).load(dataList.urlToImage).into(binding.imgBanner)
     }
 
+
+    // Function to hide the loading progress bar.
     private fun hideLoading() {
         binding.apply {
             progress.visibility = View.GONE
@@ -177,6 +201,7 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    // Function to show the loading progress bar.
     private fun showLoading() {
         binding.apply {
             content.visibility = View.GONE

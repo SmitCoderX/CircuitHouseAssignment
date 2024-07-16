@@ -13,9 +13,13 @@ import androidx.leanback.widget.Row
 import androidx.leanback.widget.RowPresenter
 import com.smitcoderx.circuithouseassignment.data.Article
 import com.smitcoderx.circuithouseassignment.data.NewsData
-import com.smitcoderx.circuithouseassignment.ui.base.BaseViewModel
-import com.smitcoderx.circuithouseassignment.utils.ResponseState
 import dagger.hilt.android.AndroidEntryPoint
+
+
+/*
+* Used HomeFragment for showing the list of articles. inside the main Activity. Used bindData function to call it in activity and pass
+* the article list. Also used onItemViewSelectedListener provided by RowSupportFragment to show selected effect on the article card item.
+*/
 
 @AndroidEntryPoint
 class HomeFragment : RowsSupportFragment() {

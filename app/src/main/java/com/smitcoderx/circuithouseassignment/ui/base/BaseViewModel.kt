@@ -23,8 +23,15 @@ class BaseViewModel @Inject constructor(private val repository: BaseRepository) 
     val isNetworkConnectedLiveData = MutableLiveData<Boolean>()
 
 
+    /*
+    * Handling and Checking for country and category wise data if any of the parameters are empty, it is fetching according
+    * from the different. i.e if category is empty it will use country and vice-versa. By default using country with India code.
+    */
+
     fun getTopHeadlines(country: String, category: String) = viewModelScope.launch {
         Log.d(TAG, "getTopHeadlines: $country $category")
+
+        // Checking for internet connection
         if (isNetworkConnectedLiveData.value == false) {
             _topHeadlinesLiveData.value =
                 ResponseState.Error("This app requires an active internet connection to be used.")
@@ -32,6 +39,7 @@ class BaseViewModel @Inject constructor(private val repository: BaseRepository) 
         _topHeadlinesLiveData.value = ResponseState.Loading()
         try {
 
+            // Checks for country and category parameter null check and retrieve data accordingly.
             val response = if (country.isNotEmpty() && category.isNotEmpty()) {
                 repository.getTopHeadlines(country, category)
             } else {
@@ -45,6 +53,7 @@ class BaseViewModel @Inject constructor(private val repository: BaseRepository) 
             if (response.isSuccessful && response.body()?.status == "ok") {
                 _topHeadlinesLiveData.value = ResponseState.Success(response.body()!!)
             } else {
+                // Send Error Response if found any i.e in api limit exceeded, api key missing, etc.
                 _topHeadlinesLiveData.value =
                     ResponseState.Error(errorResponse(response)?.message.toString())
             }

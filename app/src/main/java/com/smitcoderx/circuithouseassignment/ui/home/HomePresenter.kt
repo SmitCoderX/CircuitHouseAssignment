@@ -1,6 +1,5 @@
 package com.smitcoderx.circuithouseassignment.ui.home
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -10,6 +9,8 @@ import com.bumptech.glide.Glide
 import com.smitcoderx.circuithouseassignment.R
 import com.smitcoderx.circuithouseassignment.data.Article
 
+
+// Used Presenter to inflate the article card with image and text.
 class HomePresenter : Presenter() {
 
     override fun onCreateViewHolder(parent: ViewGroup?): ViewHolder {
